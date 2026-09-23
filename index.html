@@ -1,1152 +1,2294 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#111827" />
-  <meta name="description" content="Amar Diary — Your personal diary and social space." />
-
-  <title>Amar Diary</title>
-
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="icon-192.png" />
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #070b14;
-      --card: rgba(17, 24, 39, 0.88);
-      --card2: rgba(30, 41, 59, 0.75);
-      --border: rgba(255,255,255,.10);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --primary: #6366f1;
-      --secondary: #8b5cf6;
-      --danger: #ef4444;
-      --success: #22c55e;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(99,102,241,.20), transparent 35%),
-        radial-gradient(circle at bottom right, rgba(139,92,246,.16), transparent 35%),
-        var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-      border: 0;
-    }
-
-    .app {
-      min-height: 100vh;
-      padding-bottom: 90px;
-    }
-
-    /* HEADER */
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7,11,20,.88);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 18px;
-    }
-
-    .header-inner {
-      max-width: 1100px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    .brand img {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      object-fit: cover;
-      box-shadow: 0 0 22px rgba(99,102,241,.35);
-    }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    .brand-subtitle {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: var(--card);
-      color: white;
-      border: 1px solid var(--border);
-      transition: .25s;
-    }
-
-    .icon-btn:hover {
-      transform: translateY(-2px);
-      background: var(--card2);
-    }
-
-    /* MAIN */
-
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px 14px;
-    }
-
-    .section {
-      display: none;
-      animation: fadeIn .3s ease;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* HERO */
-
-    .hero {
-      background:
-        linear-gradient(135deg, rgba(99,102,241,.20), rgba(139,92,246,.12)),
-        var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 28px;
-      margin-bottom: 18px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .hero h1 {
-      font-size: clamp(28px, 6vw, 48px);
-      margin-bottom: 10px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 650px;
-    }
-
-    .hero-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 22px;
-    }
-
-    /* BUTTONS */
-
-    .btn {
-      padding: 12px 17px;
-      border-radius: 13px;
-      color: white;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      transition: .25s;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(99,102,241,.22);
-    }
-
-    .btn.secondary {
-      background: var(--card2);
-    }
-
-    .btn.danger {
-      background: var(--danger);
-    }
-
-    .btn.success {
-      background: var(--success);
-    }
-
-    /* CARDS */
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 16px;
-      backdrop-filter: blur(16px);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    /* PROFILE */
-
-    .profile-cover {
-      height: 220px;
-      border-radius: 22px 22px 0 0;
-      background:
-        linear-gradient(135deg, rgba(99,102,241,.5), rgba(139,92,246,.35)),
-        url("icon-512.png") center/cover;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cover-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(transparent 45%, rgba(0,0,0,.65));
-    }
-
-    .profile-card {
-      overflow: hidden;
-      padding: 0;
-    }
-
-    .profile-info {
-      padding: 0 20px 22px;
-      position: relative;
-    }
-
-    .avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border: 5px solid var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      font-weight: 900;
-      overflow: hidden;
-      position: relative;
-      margin-top: -50px;
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-name {
-      font-size: 25px;
-      font-weight: 900;
-      margin-top: 10px;
-    }
-
-    .username {
-      color: #a5b4fc;
-      margin-top: 4px;
-    }
-
-    .bio {
-      color: var(--muted);
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-
-    .stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .stat {
-      flex: 1;
-      min-width: 100px;
-      text-align: center;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border);
-      padding: 13px;
-      border-radius: 14px;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 19px;
-    }
-
-    .stat span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    /* SEARCH */
-
-    .search-box {
-      display: flex;
-      gap: 8px;
-    }
-
-    .input,
-    textarea,
-    select {
-      width: 100%;
-      background: rgba(2,6,23,.65);
-      color: white;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 13px;
-      outline: none;
-    }
-
-    .input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-    }
-
-    textarea {
-      min-height: 130px;
-      resize: vertical;
-    }
-
-    /* POST */
-
-    .post-header {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .post-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .post-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .post-author {
-      font-weight: 800;
-    }
-
-    .post-time {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .privacy {
-      margin-left: auto;
-      color: #a5b4fc;
-      font-size: 12px;
-    }
-
-    .post-title {
-      font-size: 21px;
-      font-weight: 900;
-      margin-top: 16px;
-    }
-
-    .post-body {
-      color: #dbe4f0;
-      line-height: 1.7;
-      margin-top: 9px;
-      white-space: pre-wrap;
-    }
-
-    .post-image {
-      width: 100%;
-      max-height: 520px;
-      object-fit: cover;
-      border-radius: 16px;
-      margin-top: 15px;
-    }
-
-    .post-actions {
-      display: flex;
-      gap: 7px;
-      border-top: 1px solid var(--border);
-      margin-top: 16px;
-      padding-top: 12px;
-    }
-
-    .post-action {
-      flex: 1;
-      padding: 11px 7px;
-      border-radius: 11px;
-      background: transparent;
-      color: var(--muted);
-      transition: .2s;
-    }
-
-    .post-action:hover,
-    .post-action.active {
-      background: rgba(99,102,241,.13);
-      color: white;
-    }
-
-    /* DIARY */
-
-    .diary-book {
-      perspective: 1200px;
-    }
-
-    .diary-page {
-      min-height: 360px;
-      background:
-        linear-gradient(rgba(255,255,255,.94), rgba(248,250,252,.96)),
-        repeating-linear-gradient(
-          to bottom,
-          transparent 0,
-          transparent 31px,
-          rgba(99,102,241,.12) 32px
-        );
-      color: #172033;
-      border-radius: 6px 20px 20px 6px;
-      padding: 28px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.3);
-      transform-origin: left center;
-      animation: pageOpen .7s ease;
-    }
-
-    @keyframes pageOpen {
-      from {
-        transform: rotateY(-28deg);
-        opacity: .3;
-      }
-      to {
-        transform: rotateY(0);
-        opacity: 1;
-      }
-    }
-
-    .diary-title {
-      font-size: 28px;
-      font-weight: 900;
-      color: #111827;
-      margin-bottom: 15px;
-    }
-
-    .diary-content {
-      line-height: 2;
-      white-space: pre-wrap;
-    }
-
-    .diary-lock {
-      color: #475569;
-      text-align: center;
-      padding: 70px 15px;
-    }
-
-    /* PRIVACY */
-
-    .privacy-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .privacy-option {
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      border-radius: 15px;
-      padding: 16px;
-      color: white;
-      text-align: left;
-      transition: .2s;
-    }
-
-    .privacy-option:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary);
-    }
-
-    .privacy-option strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .privacy-option span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    /* ADMIN */
-
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .admin-item {
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-    }
-
-    .admin-item strong {
-      display: block;
-      font-size: 22px;
-      margin-bottom: 5px;
-    }
-
-    .admin-item span {
-      color: var(--muted);
-    }
-
-    /* BOTTOM NAV */
-
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      bottom: 12px;
-      transform: translateX(-50%);
-      z-index: 200;
-      width: min(96%, 600px);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 5px;
-      background: rgba(10,15,28,.92);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      padding: 7px;
-      border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.4);
-    }
-
-    .nav-btn {
-      background: transparent;
-      color: var(--muted);
-      padding: 9px 4px;
-      border-radius: 13px;
-      font-size: 11px;
-      transition: .2s;
-    }
-
-    .nav-btn.active,
-    .nav-btn:hover {
-      color: white;
-      background: rgba(99,102,241,.18);
-    }
-
-    .nav-icon {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 2px;
-    }
-
-    /* MODAL */
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(8px);
-      z-index: 500;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-box {
-      width: min(100%, 600px);
-      max-height: 90vh;
-      overflow-y: auto;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 20px;
-      animation: modalIn .25s ease;
-    }
-
-    @keyframes modalIn {
-      from {
-        opacity: 0;
-        transform: scale(.95) translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .modal-header h2 {
-      font-size: 21px;
-    }
-
-    .close-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255,255,255,.06);
-      color: white;
-    }
-
-    .form-group {
-      margin-bottom: 14px;
-    }
-
-    .form-label {
-      display: block;
-      color: #cbd5e1;
-      font-size: 13px;
-      margin-bottom: 7px;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    /* TOAST */
-
-    .toast {
-      position: fixed;
-      top: 80px;
-      right: 15px;
-      z-index: 900;
-      background: #111827;
-      border: 1px solid var(--border);
-      color: white;
-      padding: 13px 16px;
-      border-radius: 13px;
-      box-shadow: 0 15px 35px rgba(0,0,0,.3);
-      display: none;
-      animation: toastIn .25s ease;
-    }
-
-    .toast.show {
-      display: block;
-    }
-
-    @keyframes toastIn {
-      from {
-        opacity: 0;
-        transform: translateX(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 40px 15px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width: 650px) {
-      .hero {
-        padding: 22px;
-      }
-
-      .profile-cover {
-        height: 170px;
-      }
-
-      .privacy-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .admin-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .post-actions {
-        gap: 3px;
-      }
-
-      .post-action {
-        font-size: 12px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101426">
+<meta name="description" content="Amar Diary - Social Writing & Digital Books">
+
+<title>Amar Diary</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#080b16;
+  --card:#111827;
+  --card2:#172033;
+  --border:rgba(255,255,255,.10);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --primary:#6366f1;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --green:#22c55e;
+  --red:#ef4444;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top left,rgba(99,102,241,.18),transparent 35%),
+    radial-gradient(circle at bottom right,rgba(236,72,153,.12),transparent 35%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+
+button,input,textarea,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.app{
+  min-height:100vh;
+  padding-bottom:90px;
+}
+
+/* HEADER */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(8,11,22,.90);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+.header-inner{
+  max-width:1100px;
+  margin:auto;
+  padding:12px 15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+}
+
+.logo-icon{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  font-size:22px;
+}
+
+.logo-name{
+  font-size:19px;
+  font-weight:900;
+}
+
+.logo-sub{
+  color:var(--muted);
+  font-size:10px;
+  margin-top:2px;
+}
+
+.header-actions{
+  display:flex;
+  gap:7px;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:var(--card);
+  color:white;
+  border:1px solid var(--border);
+}
+
+/* CONTAINER */
+
+.container{
+  width:min(1100px,100%);
+  margin:auto;
+  padding:18px 14px;
+}
+
+.section{
+  display:none;
+  animation:fade .25s ease;
+}
+
+.section.active{
+  display:block;
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* COMMON */
+
+.card{
+  background:rgba(17,24,39,.90);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:15px;
+  backdrop-filter:blur(15px);
+}
+
+.btn{
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  color:white;
+  padding:11px 16px;
+  border-radius:12px;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.btn.secondary{
+  background:var(--card2);
+}
+
+.btn.danger{
+  background:var(--red);
+}
+
+.btn.success{
+  background:var(--green);
+}
+
+.input,
+textarea,
+select{
+  width:100%;
+  background:#080d19;
+  color:white;
+  border:1px solid var(--border);
+  padding:12px;
+  border-radius:12px;
+  outline:none;
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.form-group{
+  margin-bottom:13px;
+}
+
+.label{
+  display:block;
+  font-size:13px;
+  color:#cbd5e1;
+  margin-bottom:6px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+/* HOME */
+
+.welcome{
+  background:
+    linear-gradient(135deg,rgba(99,102,241,.25),rgba(139,92,246,.10)),
+    var(--card);
+  border:1px solid var(--border);
+  border-radius:23px;
+  padding:25px;
+  margin-bottom:16px;
+}
+
+.welcome h1{
+  font-size:clamp(27px,6vw,43px);
+  margin-bottom:8px;
+}
+
+.welcome p{
+  color:var(--muted);
+  line-height:1.7;
+}
+
+.quick-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+
+/* STORIES */
+
+.section-title{
+  font-size:19px;
+  font-weight:900;
+  margin-bottom:13px;
+}
+
+.story-row{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:5px;
+}
+
+.story{
+  min-width:82px;
+  height:120px;
+  border-radius:15px;
+  position:relative;
+  overflow:hidden;
+  border:2px solid var(--primary);
+  background:linear-gradient(145deg,#312e81,#7c3aed);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:8px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.story.add{
+  background:var(--card2);
+  border:1px dashed #64748b;
+  align-items:center;
+  text-align:center;
+  font-size:25px;
+}
+
+.story-name{
+  position:absolute;
+  bottom:7px;
+  left:5px;
+  right:5px;
+  text-align:center;
+  background:rgba(0,0,0,.45);
+  border-radius:7px;
+  padding:4px;
+  font-size:10px;
+}
+
+/* POST CREATE */
+
+.create-post{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.small-avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+.small-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.fake-input{
+  flex:1;
+  background:#0b1120;
+  color:var(--muted);
+  border:1px solid var(--border);
+  border-radius:25px;
+  padding:12px 16px;
+  cursor:pointer;
+}
+
+/* POSTS */
+
+.post-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.post-info{
+  flex:1;
+}
+
+.post-name{
+  font-weight:800;
+}
+
+.post-time{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.post-privacy{
+  font-size:11px;
+  color:#a5b4fc;
+}
+
+.post-title{
+  font-size:20px;
+  font-weight:900;
+  margin-top:14px;
+}
+
+.post-text{
+  margin-top:8px;
+  line-height:1.7;
+  color:#dbe4f0;
+  white-space:pre-wrap;
+}
+
+.post-image{
+  width:100%;
+  max-height:500px;
+  object-fit:cover;
+  border-radius:15px;
+  margin-top:13px;
+}
+
+.post-actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  border-top:1px solid var(--border);
+  margin-top:14px;
+  padding-top:10px;
+}
+
+.post-action{
+  background:transparent;
+  color:var(--muted);
+  padding:9px 4px;
+  border-radius:10px;
+}
+
+.post-action:hover,
+.post-action.active{
+  background:rgba(99,102,241,.14);
+  color:white;
+}
+
+/* BOOKS */
+
+.book-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.book-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:17px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.book-card:hover{
+  transform:translateY(-4px);
+}
+
+.book-cover{
+  height:210px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:15px;
+  background:linear-gradient(145deg,#312e81,#7e22ce);
+  font-size:25px;
+  font-weight:900;
+}
+
+.book-info{
+  padding:13px;
+}
+
+.book-title{
+  font-weight:900;
+}
+
+.book-author{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+
+/* BOOK VIEW */
+
+.book-reader{
+  perspective:1400px;
+}
+
+.book-page{
+  background:#fffdf5;
+  color:#172033;
+  min-height:450px;
+  border-radius:6px 20px 20px 6px;
+  padding:35px 27px;
+  box-shadow:0 20px 55px rgba(0,0,0,.4);
+  transform-origin:left center;
+  animation:pageTurn .7s ease;
+}
+
+@keyframes pageTurn{
+  from{
+    transform:rotateY(-80deg);
+    opacity:.2;
+  }
+  to{
+    transform:rotateY(0);
+    opacity:1;
+  }
+}
+
+.book-page h2{
+  font-size:28px;
+  margin-bottom:18px;
+}
+
+.book-page p{
+  line-height:2;
+  white-space:pre-wrap;
+}
+
+.page-controls{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:15px;
+}
+
+.chapter-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.chapter-btn{
+  padding:9px 12px;
+  border-radius:10px;
+  background:var(--card2);
+  color:white;
+}
+
+/* FRIENDS */
+
+.friend{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.friend:last-child{
+  border-bottom:0;
+}
+
+.friend-info{
+  flex:1;
+}
+
+.friend-name{
+  font-weight:800;
+}
+
+.friend-status{
+  color:var(--green);
+  font-size:11px;
+  margin-top:3px;
+}
+
+/* MESSAGES */
+
+.message-layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  min-height:520px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.chat-list{
+  border-right:1px solid var(--border);
+  padding:10px;
+}
+
+.chat-user{
+  padding:12px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  cursor:pointer;
+}
+
+.chat-user:hover,
+.chat-user.active{
+  background:rgba(99,102,241,.15);
+}
+
+.chat-window{
+  display:flex;
+  flex-direction:column;
+}
+
+.chat-header{
+  padding:14px;
+  border-bottom:1px solid var(--border);
+  font-weight:900;
+}
+
+.chat-messages{
+  flex:1;
+  padding:15px;
+  overflow-y:auto;
+}
+
+.message{
+  max-width:75%;
+  padding:10px 13px;
+  border-radius:15px;
+  margin-bottom:9px;
+  background:var(--card2);
+}
+
+.message.me{
+  margin-left:auto;
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+}
+
+.chat-input{
+  display:flex;
+  gap:7px;
+  padding:10px;
+  border-top:1px solid var(--border);
+}
+
+.chat-input input{
+  flex:1;
+}
+
+/* NOTIFICATIONS */
+
+.notification{
+  display:flex;
+  gap:11px;
+  padding:13px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.notification:last-child{
+  border-bottom:0;
+}
+
+.notification-icon{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:rgba(99,102,241,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* PROFILE */
+
+.cover{
+  height:230px;
+  border-radius:20px 20px 0 0;
+  background:
+    linear-gradient(135deg,rgba(99,102,241,.3),rgba(236,72,153,.25)),
+    linear-gradient(135deg,#1e1b4b,#312e81);
+  position:relative;
+}
+
+.cover-edit{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+}
+
+.profile-box{
+  overflow:hidden;
+  padding:0;
+}
+
+.profile-info{
+  padding:0 20px 22px;
+}
+
+.avatar-large{
+  width:105px;
+  height:105px;
+  border-radius:50%;
+  border:5px solid var(--bg);
+  background:linear-gradient(135deg,var(--primary),var(--purple));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+  font-weight:900;
+  overflow:hidden;
+  margin-top:-52px;
+  position:relative;
+}
+
+.avatar-large img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profile-name{
+  font-size:27px;
+  font-weight:900;
+  margin-top:8px;
+}
+
+.profile-username{
+  color:#a5b4fc;
+  margin-top:4px;
+}
+
+.bio{
+  color:var(--muted);
+  line-height:1.6;
+  margin-top:9px;
+}
+
+.profile-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:16px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+  margin-top:18px;
+}
+
+.stat{
+  text-align:center;
+  padding:11px 4px;
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+}
+
+.stat strong{
+  display:block;
+  font-size:18px;
+}
+
+.stat span{
+  color:var(--muted);
+  font-size:11px;
+}
+
+/* ABOUT */
+
+.about-row{
+  display:flex;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.about-row:last-child{
+  border-bottom:0;
+}
+
+.about-icon{
+  width:30px;
+}
+
+/* DIARY */
+
+.diary{
+  background:#fffdf5;
+  color:#172033;
+  min-height:420px;
+  border-radius:5px 20px 20px 5px;
+  padding:30px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      rgba(99,102,241,.10) 32px
+    );
+  animation:pageTurn .7s ease;
+}
+
+.diary h2{
+  margin-bottom:15px;
+}
+
+.diary p{
+  white-space:pre-wrap;
+  line-height:2;
+}
+
+/* SETTINGS */
+
+.setting-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:15px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.setting-row:last-child{
+  border-bottom:0;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+  position:fixed;
+  z-index:200;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  width:min(97%,700px);
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:4px;
+  background:rgba(10,15,28,.94);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  padding:6px;
+  border-radius:19px;
+  box-shadow:0 15px 40px rgba(0,0,0,.45);
+}
+
+.nav-btn{
+  background:transparent;
+  color:var(--muted);
+  border-radius:12px;
+  padding:8px 3px;
+  font-size:10px;
+}
+
+.nav-btn.active,
+.nav-btn:hover{
+  background:rgba(99,102,241,.17);
+  color:white;
+}
+
+.nav-icon{
+  display:block;
+  font-size:19px;
+  margin-bottom:2px;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:min(100%,620px);
+  max-height:90vh;
+  overflow:auto;
+  background:#0f172a;
+  border:1px solid var(--border);
+  border-radius:21px;
+  padding:20px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.close{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  background:rgba(255,255,255,.07);
+  color:white;
+}
+
+.form-actions{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  top:75px;
+  right:15px;
+  z-index:900;
+  background:#111827;
+  color:white;
+  border:1px solid var(--border);
+  padding:12px 16px;
+  border-radius:12px;
+  display:none;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:750px){
+
+  .book-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .message-layout{
+    grid-template-columns:1fr;
+  }
+
+  .chat-list{
+    border-right:0;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    overflow-x:auto;
+  }
+
+  .chat-user{
+    min-width:130px;
+  }
+
+}
+
+@media(max-width:550px){
+
+  .bottom-nav{
+    grid-template-columns:repeat(6,1fr);
+  }
+
+  .nav-btn{
+    font-size:8px;
+  }
+
+  .nav-icon{
+    font-size:17px;
+  }
+
+  .book-grid{
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+  }
+
+  .book-cover{
+    height:165px;
+    font-size:19px;
+  }
+
+  .cover{
+    height:180px;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .post-actions{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-inner">
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
 
-      <div class="brand" onclick="showSection('home')">
-        <img src="icon-192.png" alt="Amar Diary">
+    <div class="logo" onclick="showSection('home')">
+      <div class="logo-icon">📖</div>
+      <div>
+        <div class="logo-name">Amar Diary</div>
+        <div class="logo-sub">আমার গল্প • আমার স্মৃতি</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" onclick="showSection('notifications')">🔔</button>
+      <button class="icon-btn" onclick="showSection('profile')">👤</button>
+    </div>
+
+  </div>
+</header>
+
+
+<main class="container">
+
+<!-- ================= HOME ================= -->
+
+<section id="home" class="section active">
+
+  <div class="welcome">
+    <h1>স্বাগতম 👋</h1>
+    <p>
+      এখানে তোমার পোস্ট, গল্প, উপন্যাস, কবিতা,
+      ব্যক্তিগত ডায়েরি এবং বই—সব এক জায়গায় থাকবে।
+    </p>
+
+    <div class="quick-actions">
+      <button class="btn" onclick="openPost()">✍️ পোস্ট করুন</button>
+      <button class="btn secondary" onclick="openBook()">📚 নতুন বই</button>
+      <button class="btn secondary" onclick="openDiary()">📔 ডায়েরি</button>
+    </div>
+  </div>
+
+
+  <!-- STORIES -->
+
+  <div class="card">
+
+    <div class="section-title">⭕ Stories</div>
+
+    <div class="story-row" id="stories">
+
+      <div class="story add" onclick="openStory()">
         <div>
-          <div class="brand-title">Amar Diary</div>
-          <div class="brand-subtitle">আমার গল্প, আমার স্মৃতি</div>
+          ➕
+          <br>
+          <small>স্টোরি দিন</small>
         </div>
       </div>
 
-      <div class="header-actions">
-        <button class="icon-btn" onclick="openSearch()" title="Search">🔎</button>
-        <button class="icon-btn" onclick="showSection('profile')" title="Profile">👤</button>
+      <div class="story">
+        📖
+        <div class="story-name">আমার গল্প</div>
+      </div>
+
+      <div class="story">
+        🌸
+        <div class="story-name">আজকের দিন</div>
+      </div>
+
+      <div class="story">
+        🌙
+        <div class="story-name">রাতের ভাবনা</div>
       </div>
 
     </div>
-  </header>
+
+  </div>
 
 
-  <main class="container">
+  <!-- CREATE POST -->
 
-    <!-- HOME -->
-    <section id="home" class="section active">
+  <div class="card">
 
-      <div class="hero">
-        <h1>আমার Diary 📖</h1>
-        <p>
-          নিজের গল্প লিখুন, স্মৃতি রাখুন এবং যাদের সাথে শেয়ার করতে চান
-          তাদের সাথে আপনার লেখা ভাগ করে নিন।
-        </p>
+    <div class="create-post">
 
-        <div class="hero-buttons">
-          <button class="btn" onclick="openPost()">✍️ নতুন পোস্ট</button>
-          <button class="btn secondary" onclick="showSection('diary')">📖 আমার ডায়রি</button>
-          <button class="btn secondary" onclick="showSection('profile')">👤 প্রোফাইল</button>
-        </div>
+      <div class="small-avatar" id="miniAvatar">M</div>
+
+      <div class="fake-input" onclick="openPost()">
+        তুমি কী লিখতে চাও?
       </div>
 
-      <div id="feed"></div>
+    </div>
 
-    </section>
+  </div>
 
 
-    <!-- PROFILE -->
-    <section id="profile" class="section">
+  <!-- FEED -->
 
-      <div class="card profile-card">
+  <div id="feed">
 
-        <div class="profile-cover">
-          <div class="cover-overlay"></div>
+    <div class="card">
+
+      <div class="post-head">
+
+        <div class="small-avatar">M</div>
+
+        <div class="post-info">
+          <div class="post-name">MONORANJON</div>
+          <div class="post-time">এখনই • 🌎 Public</div>
         </div>
 
-        <div class="profile-info">
-
-          <div class="avatar" id="profileAvatar">
-            M
-          </div>
-
-          <div class="profile-name" id="profileName">
-            MONORANJON
-          </div>
-
-          <div class="username" id="profileUsername">
-            @writer
-          </div>
-
-          <div class="bio" id="profileBio">
-            আমার Amar Diary profile
-          </div>
-
-          <div class="stats">
-
-            <div class="stat">
-              <strong id="postCount">0</strong>
-              <span>Posts</span>
-            </div>
-
-            <div class="stat">
-              <strong id="followerCount">0</strong>
-              <span>Followers</span>
-            </div>
-
-            <div class="stat">
-              <strong id="followingCount">0</strong>
-              <span>Following</span>
-            </div>
-
-            <div class="stat">
-              <strong id="likeCount">0</strong>
-              <span>Likes</span>
-            </div>
-
-          </div>
-
-          <div class="hero-buttons">
-            <button class="btn" onclick="openProfileEdit()">✏️ Edit Profile</button>
-            <button class="btn secondary" onclick="openPost()">➕ Create Post</button>
-          </div>
-
-        </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">👥 Friends & Followers</div>
+      <div class="post-title">
+        Amar Diary-তে স্বাগতম 📖
+      </div>
 
-        <p style="color:var(--muted);line-height:1.7">
-          Username search এবং আসল Followers/Following system
-          পরের ধাপে Supabase দিয়ে যুক্ত করা হবে।
-        </p>
+      <div class="post-text">
+        এখানে তুমি তোমার গল্প, কবিতা, উপন্যাস,
+        ছড়া এবং স্মৃতি লিখে রাখতে পারবে।
+      </div>
 
-        <button class="btn secondary" style="margin-top:14px" onclick="openSearch()">
-          🔎 Username Search
+      <div class="post-actions">
+
+        <button class="post-action" onclick="react(this)">
+          ❤️ Like
         </button>
+
+        <button class="post-action" onclick="commentPost()">
+          💬 Comment
+        </button>
+
+        <button class="post-action" onclick="sharePost()">
+          🔗 Share
+        </button>
+
+        <button class="post-action" onclick="translatePost()">
+          🌐 Translate
+        </button>
+
       </div>
 
-    </section>
+    </div>
+
+  </div>
+
+</section>
 
 
-    <!-- DIARY -->
-    <section id="diary" class="section">
+<!-- ================= FRIENDS ================= -->
 
-      <div class="card">
-        <div class="card-title">📖 আমার ব্যক্তিগত ডায়রি</div>
+<section id="friends" class="section">
 
-        <p style="color:var(--muted);line-height:1.7;margin-bottom:16px">
-          ডায়রি ডিফল্টভাবে Personal থাকবে। ভবিষ্যতে আপনি নির্দিষ্ট
-          Username নির্বাচন করে শুধু তাদের সাথে নির্দিষ্ট Diary entry
-          শেয়ার করতে পারবেন।
-        </p>
+  <div class="card">
 
-        <button class="btn" onclick="openDiary()">✍️ নতুন ডায়রি লিখুন</button>
+    <div class="section-title">👥 Friends</div>
+
+    <input
+      class="input"
+      id="friendSearch"
+      placeholder="Username দিয়ে খুঁজুন..."
+    >
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">📨 Friend Requests</div>
+
+    <div class="friend">
+
+      <div class="small-avatar">R</div>
+
+      <div class="friend-info">
+        <div class="friend-name">Rahim</div>
+        <div class="friend-status">Friend Request</div>
       </div>
 
-      <div class="diary-book">
-        <div class="diary-page" id="diaryPage">
-          <div class="diary-lock">
-            🔒<br><br>
-            আপনার Personal Diary এখানে থাকবে।
-            <br><br>
-            <small>Only you can see it.</small>
-          </div>
+      <button class="btn success" onclick="acceptFriend(this)">
+        Accept
+      </button>
+
+    </div>
+
+    <div class="friend">
+
+      <div class="small-avatar">A</div>
+
+      <div class="friend-info">
+        <div class="friend-name">Arif</div>
+        <div class="friend-status">Friend Request</div>
+      </div>
+
+      <button class="btn success" onclick="acceptFriend(this)">
+        Accept
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">👥 My Friends</div>
+
+    <div id="friendList">
+
+      <div class="friend">
+
+        <div class="small-avatar">S</div>
+
+        <div class="friend-info">
+          <div class="friend-name">Sakib</div>
+          <div class="friend-status">🟢 Online</div>
+        </div>
+
+        <button class="btn secondary" onclick="openMessages()">
+          💬 Message
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= BOOKS ================= -->
+
+<section id="books" class="section">
+
+  <div class="card">
+
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+
+      <div>
+        <div class="section-title">📚 নতুন বই</div>
+        <div class="muted">
+          নতুন উপন্যাস, গল্প, কবিতা ও অন্যান্য লেখা
         </div>
       </div>
 
-    </section>
+      <button class="btn" onclick="openBook()">
+        ➕ বই
+      </button>
+
+    </div>
+
+  </div>
 
 
-    <!-- SEARCH -->
-    <section id="search" class="section">
+  <div class="book-grid" id="bookGrid">
 
-      <div class="card">
-        <div class="card-title">🔎 Username Search</div>
+    <div class="book-card" onclick="openReader('নীরব রাত','MONORANJON')">
 
-        <div class="search-box">
-          <input
-            class="input"
-            id="searchInput"
-            placeholder="@username লিখুন"
-            oninput="searchUser()"
-          >
-          <button class="btn" onclick="searchUser()">Search</button>
+      <div class="book-cover">
+        📖
+        <br>
+        নীরব রাত
+      </div>
+
+      <div class="book-info">
+        <div class="book-title">নীরব রাত</div>
+        <div class="book-author">✍️ MONORANJON</div>
+      </div>
+
+    </div>
+
+
+    <div class="book-card" onclick="openReader('আমার গল্প','MONORANJON')">
+
+      <div class="book-cover">
+        🌸
+        <br>
+        আমার গল্প
+      </div>
+
+      <div class="book-info">
+        <div class="book-title">আমার গল্প</div>
+        <div class="book-author">✍️ MONORANJON</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= MESSAGES ================= -->
+
+<section id="messages" class="section">
+
+  <div class="message-layout">
+
+    <div class="chat-list">
+
+      <div class="chat-user active" onclick="selectChat('Sakib')">
+        <div class="small-avatar">S</div>
+        <div>
+          <b>Sakib</b>
+          <small style="display:block;color:#22c55e">
+            🟢 Online
+          </small>
         </div>
       </div>
 
-      <div id="searchResults"></div>
-
-    </section>
-
-
-    <!-- ADMIN -->
-    <section id="admin" class="section">
-
-      <div class="card">
-        <div class="card-title">🛡️ Admin Panel</div>
-
-        <p style="color:var(--muted);line-height:1.7">
-          এটি Admin Panel-এর UI। আসল Admin permission,
-          user management এবং database security Supabase RLS
-          দিয়ে করা হবে।
-        </p>
+      <div class="chat-user" onclick="selectChat('Rahim')">
+        <div class="small-avatar">R</div>
+        <div>
+          <b>Rahim</b>
+          <small style="display:block;color:#22c55e">
+            🟢 Online
+          </small>
+        </div>
       </div>
 
-      <div class="admin-grid">
+    </div>
 
-        <div class="admin-item">
-          <strong id="adminUsers">0</strong>
-          <span>Users</span>
+
+    <div class="chat-window">
+
+      <div class="chat-header" id="chatTitle">
+        💬 Sakib
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+
+        <div class="message">
+          হাই 👋
         </div>
 
-        <div class="admin-item">
-          <strong id="adminPosts">0</strong>
+        <div class="message me">
+          হ্যালো! কেমন আছো? 😊
+        </div>
+
+      </div>
+
+      <div class="chat-input">
+
+        <button
+          class="icon-btn"
+          style="width:42px"
+          onclick="addEmoji()">
+          😊
+        </button>
+
+        <input
+          id="messageInput"
+          class="input"
+          placeholder="মেসেজ লিখুন..."
+          onkeydown="if(event.key==='Enter')sendMessage()"
+        >
+
+        <button class="btn" onclick="sendMessage()">
+          Send
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:14px">
+
+    <p class="muted">
+      💡 মেসেজিং অংশটি অনলাইন ব্যবহারকারীদের জন্য রাখা হয়েছে।
+      আসল realtime chat পরে Supabase যুক্ত করলে চালু হবে।
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ================= NOTIFICATIONS ================= -->
+
+<section id="notifications" class="section">
+
+  <div class="card">
+
+    <div class="section-title">
+      🔔 Notifications
+    </div>
+
+    <div class="notification">
+
+      <div class="notification-icon">❤️</div>
+
+      <div>
+        <b>Rahim</b> তোমার পোস্টে Like দিয়েছে।
+        <div class="muted">২ মিনিট আগে</div>
+      </div>
+
+    </div>
+
+
+    <div class="notification">
+
+      <div class="notification-icon">💬</div>
+
+      <div>
+        <b>Sakib</b> তোমার পোস্টে Comment করেছে।
+        <div class="muted">১০ মিনিট আগে</div>
+      </div>
+
+    </div>
+
+
+    <div class="notification">
+
+      <div class="notification-icon">👥</div>
+
+      <div>
+        <b>Arif</b> তোমাকে Friend Request পাঠিয়েছে।
+        <div class="muted">৩০ মিনিট আগে</div>
+      </div>
+
+    </div>
+
+
+    <div class="notification">
+
+      <div class="notification-icon">📚</div>
+
+      <div>
+        নতুন একটি বই প্রকাশ হয়েছে।
+        <div class="muted">১ ঘণ্টা আগে</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PROFILE ================= -->
+
+<section id="profile" class="section">
+
+  <div class="card profile-box">
+
+    <div class="cover">
+
+      <button
+        class="btn cover-edit"
+        onclick="openProfileEdit()">
+        🖼️ Cover
+      </button>
+
+    </div>
+
+
+    <div class="profile-info">
+
+      <div class="avatar-large" id="profileAvatar">
+        M
+      </div>
+
+      <div class="profile-name" id="profileName">
+        MONORANJON
+      </div>
+
+      <div class="profile-username">
+        @monoranjon
+      </div>
+
+      <div class="bio" id="profileBio">
+        আমার গল্প, আমার স্মৃতি এবং আমার লেখা। 📖
+      </div>
+
+
+      <div class="stats">
+
+        <div class="stat">
+          <strong id="postCount">0</strong>
           <span>Posts</span>
         </div>
 
-        <div class="admin-item">
-          <strong>🔒</strong>
-          <span>Protected Database</span>
+        <div class="stat">
+          <strong>12</strong>
+          <span>Friends</span>
         </div>
 
-        <div class="admin-item">
-          <strong>🛡️</strong>
-          <span>RLS Security</span>
+        <div class="stat">
+          <strong>35</strong>
+          <span>Followers</span>
+        </div>
+
+        <div class="stat">
+          <strong>8</strong>
+          <span>Books</span>
         </div>
 
       </div>
 
-    </section>
 
-  </main>
+      <div class="profile-buttons">
 
+        <button class="btn" onclick="openProfileEdit()">
+          ✏️ Edit Profile
+        </button>
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
+        <button class="btn secondary" onclick="openPost()">
+          ➕ Post
+        </button>
 
-    <button class="nav-btn active" onclick="showSection('home',this)">
-      <span class="nav-icon">🏠</span>
-      Home
-    </button>
+        <button class="btn secondary" onclick="showSection('settings')">
+          ⚙️ Settings
+        </button>
 
-    <button class="nav-btn" onclick="showSection('diary',this)">
-      <span class="nav-icon">📖</span>
-      Diary
-    </button>
+      </div>
 
-    <button class="nav-btn" onclick="openPost()">
-      <span class="nav-icon">➕</span>
-      Post
-    </button>
+    </div>
 
-    <button class="nav-btn" onclick="showSection('search',this)">
-      <span class="nav-icon">🔎</span>
-      Search
-    </button>
-
-    <button class="nav-btn" onclick="showSection('profile',this)">
-      <span class="nav-icon">👤</span>
-      Profile
-    </button>
-
-  </nav>
-
-</div>
+  </div>
 
 
-<!-- POST MODAL -->
+  <!-- ABOUT -->
+
+  <div class="card">
+
+    <div class="section-title">
+      ℹ️ About
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">🎂</div>
+      <div>Birthday: <b>Private</b></div>
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">⚧️</div>
+      <div>Gender: <b>Private</b></div>
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">🎓</div>
+      <div>Education: <b>Student</b></div>
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">💼</div>
+      <div>Work: <b>Not added</b></div>
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">🎨</div>
+      <div>Hobby: <b>Writing</b></div>
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">🌎</div>
+      <div>Country: <b>Bangladesh</b></div>
+    </div>
+
+    <div class="about-row">
+      <div class="about-icon">🌐</div>
+      <div>Language: <b>বাংলা</b></div>
+    </div>
+
+  </div>
+
+
+  <!-- MY WORK -->
+
+  <div class="card">
+
+    <div class="section-title">
+      ✍️ আমার লেখা
+    </div>
+
+    <div class="quick-actions">
+
+      <button class="btn secondary" onclick="showSection('books')">
+        📚 উপন্যাস
+      </button>
+
+      <button class="btn secondary" onclick="showSection('books')">
+        📖 গল্প
+      </button>
+
+      <button class="btn secondary" onclick="showSection('books')">
+        📝 কবিতা
+      </button>
+
+      <button class="btn secondary" onclick="showSection('diary')">
+        📔 Personal Diary
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= DIARY ================= -->
+
+<section id="diary" class="section">
+
+  <div class="card">
+
+    <div class="section-title">
+      📔 Personal Diary
+    </div>
+
+    <p class="muted" style="line-height:1.7">
+      এখানে তুমি ছবি দিয়ে নিজের দিনের কথা,
+      স্মৃতি বা অনুভূতি লিখে রাখতে পারবে।
+      Privacy থেকে ঠিক করতে পারবে কে এটি দেখবে।
+    </p>
+
+    <div class="quick-actions">
+
+      <button class="btn" onclick="openDiary()">
+        ✍️ নতুন Diary Entry
+      </button>
+
+      <button class="btn secondary" onclick="showSection('settings')">
+        🔐 Privacy
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="diary">
+
+    <h2>📖 আমার স্মৃতি</h2>
+
+    <p>
+আজ পরিবারের সঙ্গে সুন্দর একটি সময় কাটালাম।
+
+এই মুহূর্তটা আমার খুব ভালো লেগেছে।
+তাই আমার Personal Diary-তে লিখে রাখলাম।
+
+❤️ এই লেখাটি বর্তমানে Only Me।
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="settings" class="section">
+
+  <div class="card">
+
+    <div class="section-title">
+      ⚙️ Settings
+    </div>
+
+
+    <div class="setting-row">
+
+      <div>
+        <b>🌐 Language</b>
+        <div class="muted">
+          অ্যাপের ভাষা নির্বাচন করুন
+        </div>
+      </div>
+
+      <select
+        style="width:130px"
+        onchange="changeLanguage(this.value)">
+
+        <option value="bn">বাংলা</option>
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ar">العربية</option>
+
+      </select>
+
+    </div>
+
+
+    <div class="setting-row">
+
+      <div>
+        <b>🆔 ID Visibility</b>
+        <div class="muted">
+          তোমার Public ID কে দেখতে পারবে
+        </div>
+      </div>
+
+      <select style="width:140px">
+
+        <option>Everyone</option>
+        <option>Friends</option>
+        <option>Only Me</option>
+
+      </select>
+
+    </div>
+
+
+    <div class="setting-row">
+
+      <div>
+        <b>🔐 Default Privacy</b>
+        <div class="muted">
+          নতুন পোস্টের privacy
+        </div>
+      </div>
+
+      <select id="defaultPrivacy" style="width:140px">
+
+        <option>Public</option>
+        <option>Friends</option>
+        <option>Only Me</option>
+        <option>Custom</option>
+
+      </select>
+
+    </div>
+
+
+    <div class="setting-row">
+
+      <div>
+        <b>📧 Gmail</b>
+        <div class="muted">
+          শুধু তুমি দেখতে পারবে
+        </div>
+      </div>
+
+      <button class="btn secondary" onclick="toast('Gmail সেটিং পরে Supabase দিয়ে যুক্ত হবে')">
+        Add
+      </button>
+
+    </div>
+
+
+    <div class="setting-row">
+
+      <div>
+        <b>📱 Phone Number</b>
+        <div class="muted">
+          Private information
+        </div>
+      </div>
+
+      <button class="btn secondary" onclick="toast('Phone setting পরে যুক্ত হবে')">
+        Add
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="section-title">
+      🔒 Privacy Options
+    </div>
+
+    <div class="quick-actions">
+
+      <button class="btn secondary" onclick="setPrivacy('Public')">
+        🌎 Public
+      </button>
+
+      <button class="btn secondary" onclick="setPrivacy('Friends')">
+        👥 Friends
+      </button>
+
+      <button class="btn secondary" onclick="setPrivacy('Only Me')">
+        🔒 Only Me
+      </button>
+
+      <button class="btn secondary" onclick="setPrivacy('Custom')">
+        ⚙️ Custom
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- ================= BOTTOM NAV ================= -->
+
+<nav class="bottom-nav">
+
+  <button class="nav-btn active" onclick="nav('home',this)">
+    <span class="nav-icon">🏠</span>
+    Home
+  </button>
+
+  <button class="nav-btn" onclick="nav('friends',this)">
+    <span class="nav-icon">👥</span>
+    Friends
+  </button>
+
+  <button class="nav-btn" onclick="nav('books',this)">
+    <span class="nav-icon">📚</span>
+    Books
+  </button>
+
+  <button class="nav-btn" onclick="nav('messages',this)">
+    <span class="nav-icon">💬</span>
+    Messages
+  </button>
+
+  <button class="nav-btn" onclick="nav('notifications',this)">
+    <span class="nav-icon">🔔</span>
+    Alerts
+  </button>
+
+  <button class="nav-btn" onclick="nav('profile',this)">
+    <span class="nav-icon">👤</span>
+    Me
+  </button>
+
+</nav>
+
+
+<!-- ================= POST MODAL ================= -->
+
 <div class="modal" id="postModal">
 
   <div class="modal-box">
 
-    <div class="modal-header">
+    <div class="modal-head">
+
       <h2>✍️ নতুন পোস্ট</h2>
-      <button class="close-btn" onclick="closeModal('postModal')">✕</button>
+
+      <button class="close" onclick="closeModal('postModal')">
+        ✕
+      </button>
+
     </div>
+
 
     <div class="form-group">
-      <label class="form-label">Title</label>
-      <input class="input" id="postTitle" placeholder="পোস্টের শিরোনাম">
+
+      <label class="label">
+        পোস্টের ধরন
+      </label>
+
+      <select id="postType">
+
+        <option>সাধারণ পোস্ট</option>
+        <option>গল্প</option>
+        <option>কবিতা</option>
+        <option>ছড়া</option>
+        <option>উপন্যাস</option>
+        <option>Personal Diary</option>
+
+      </select>
+
     </div>
+
 
     <div class="form-group">
-      <label class="form-label">আপনার লেখা</label>
-      <textarea id="postBody" placeholder="আপনার মনের কথা লিখুন..."></textarea>
+
+      <label class="label">
+        Title
+      </label>
+
+      <input
+        id="postTitle"
+        class="input"
+        placeholder="শিরোনাম লিখুন"
+      >
+
     </div>
+
 
     <div class="form-group">
-      <label class="form-label">Image</label>
-      <input class="input" type="file" id="postImage" accept="image/*">
+
+      <label class="label">
+        লেখা
+      </label>
+
+      <textarea
+        id="postText"
+        placeholder="তোমার লেখা এখানে লিখুন..."
+      ></textarea>
+
     </div>
+
 
     <div class="form-group">
-      <label class="form-label">Privacy</label>
 
-      <div class="privacy-grid">
+      <label class="label">
+        Privacy
+      </label>
 
-        <button class="privacy-option" onclick="setPostPrivacy('public')">
-          <strong>🌍 Public</strong>
-          <span>সবাই দেখতে পারবে</span>
-        </button>
+      <select id="postPrivacy">
 
-        <button class="privacy-option" onclick="setPostPrivacy('private')">
-          <strong>🔒 Personal</strong>
-          <span>শুধু আপনি দেখতে পারবেন</span>
-        </button>
+        <option>Public</option>
+        <option>Friends</option>
+        <option>Only Me</option>
+        <option>Custom</option>
 
-        <button class="privacy-option" onclick="setPostPrivacy('custom')">
-          <strong>👥 Custom</strong>
-          <span>নির্দিষ্ট মানুষ</span>
-        </button>
+      </select>
 
-      </div>
-
-      <input type="hidden" id="postPrivacy" value="private">
     </div>
+
 
     <div class="form-actions">
-      <button class="btn" onclick="publishPost()">Publish</button>
-      <button class="btn secondary" onclick="closeModal('postModal')">Cancel</button>
+
+      <button class="btn" onclick="createPost()">
+        🚀 Post
+      </button>
+
+      <button
+        class="btn secondary"
+        onclick="closeModal('postModal')">
+        Cancel
+      </button>
+
     </div>
 
   </div>
+
 </div>
 
 
-<!-- PROFILE EDIT MODAL -->
-<div class="modal" id="profileModal">
+<!-- ================= STORY MODAL ================= -->
+
+<div class="modal" id="storyModal">
 
   <div class="modal-box">
 
-    <div class="modal-header">
-      <h2>👤 Edit Profile</h2>
-      <button class="close-btn" onclick="closeModal('profileModal')">✕</button>
+    <div class="modal-head">
+
+      <h2>⭕ Add Story</h2>
+
+      <button class="close" onclick="closeModal('storyModal')">
+        ✕
+      </button>
+
     </div>
 
     <div class="form-group">
-      <label class="form-label">Profile Picture</label>
-      <input class="input" type="file" id="profileImage" accept="image/*">
+
+      <label class="label">
+        Story লিখুন
+      </label>
+
+      <textarea
+        id="storyText"
+        placeholder="আজ কী শেয়ার করতে চান?"
+      ></textarea>
+
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Name</label>
-      <input class="input" id="nameInput">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Username</label>
-      <input class="input" id="usernameInput">
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Bio</label>
-      <textarea id="bioInput"></textarea>
-    </div>
-
-    <div class="form-actions">
-      <button class="btn" onclick="saveProfile()">Save Profile</button>
-      <button class="btn secondary" onclick="closeModal('profileModal')">Cancel</button>
-    </div>
+    <button class="btn" onclick="createStory()">
+      ➕ Add Story
+    </button>
 
   </div>
+
 </div>
 
 
-<!-- DIARY MODAL -->
+<!-- ================= BOOK MODAL ================= -->
+
+<div class="modal" id="bookModal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2>📚 নতুন বই তৈরি করুন</h2>
+
+      <button class="close" onclick="closeModal('bookModal')">
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        বই/উপন্যাসের নাম
+      </label>
+
+      <input
+        id="bookTitle"
+        class="input"
+        placeholder="যেমন: আমার নতুন গল্প"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        ধরন
+      </label>
+
+      <select id="bookType">
+
+        <option>উপন্যাস</option>
+        <option>গল্প</option>
+        <option>কবিতা</option>
+        <option>ছড়া</option>
+
+      </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        প্রথম অধ্যায়
+      </label>
+
+      <input
+        id="chapterTitle"
+        class="input"
+        placeholder="অধ্যায় ১"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        প্রথম পৃষ্ঠার লেখা
+      </label>
+
+      <textarea
+        id="chapterText"
+        placeholder="এখানে প্রথম পৃষ্ঠার লেখা..."
+      ></textarea>
+
+    </div>
+
+
+    <button class="btn" onclick="createBook()">
+      📖 বই তৈরি করুন
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ================= DIARY MODAL ================= -->
+
 <div class="modal" id="diaryModal">
 
   <div class="modal-box">
 
-    <div class="modal-header">
-      <h2>📖 নতুন ডায়রি</h2>
-      <button class="close-btn" onclick="closeModal('diaryModal')">✕</button>
+    <div class="modal-head">
+
+      <h2>📔 নতুন Diary Entry</h2>
+
+      <button class="close" onclick="closeModal('diaryModal')">
+        ✕
+      </button>
+
     </div>
 
+
     <div class="form-group">
-      <label class="form-label">Diary Title</label>
-      <input class="input" id="diaryTitle" placeholder="আজকের দিন...">
+
+      <label class="label">
+        শিরোনাম
+      </label>
+
+      <input
+        id="diaryTitle"
+        class="input"
+        placeholder="আজকের দিন"
+      >
+
     </div>
 
+
     <div class="form-group">
-      <label class="form-label">Diary Entry</label>
-      <textarea id="diaryBody" placeholder="আজ কী ঘটেছে লিখুন..."></textarea>
+
+      <label class="label">
+        কী লিখতে চান?
+      </label>
+
+      <textarea
+        id="diaryText"
+        placeholder="আজকের স্মৃতি লিখুন..."
+      ></textarea>
+
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Privacy</label>
 
-      <select id="diaryPrivacy" class="input">
-        <option value="private">🔒 Personal — শুধু আমি</option>
-        <option value="custom">👥 Custom — নির্দিষ্ট Username</option>
+    <div class="form-group">
+
+      <label class="label">
+        Privacy
+      </label>
+
+      <select id="diaryPrivacy">
+
+        <option>Only Me</option>
+        <option>Friends</option>
+        <option>Public</option>
+        <option>Custom</option>
+
       </select>
+
     </div>
 
-    <div class="form-actions">
-      <button class="btn" onclick="saveDiary()">Save Diary</button>
-      <button class="btn secondary" onclick="closeModal('diaryModal')">Cancel</button>
-    </div>
+
+    <button class="btn" onclick="saveDiary()">
+      💾 Save Diary
+    </button>
 
   </div>
+
 </div>
 
 
-<!-- SEARCH MODAL -->
-<div class="modal" id="searchModal">
+<!-- ================= PROFILE MODAL ================= -->
+
+<div class="modal" id="profileModal">
 
   <div class="modal-box">
 
-    <div class="modal-header">
-      <h2>🔎 Search User</h2>
-      <button class="close-btn" onclick="closeModal('searchModal')">✕</button>
+    <div class="modal-head">
+
+      <h2>✏️ Edit Profile</h2>
+
+      <button class="close" onclick="closeModal('profileModal')">
+        ✕
+      </button>
+
     </div>
 
-    <input
-      class="input"
-      id="userSearchInput"
-      placeholder="@username"
-      oninput="searchUserModal()"
-    >
 
-    <div id="modalSearchResults" style="margin-top:15px"></div>
+    <div class="form-group">
+
+      <label class="label">
+        নাম
+      </label>
+
+      <input
+        id="editName"
+        class="input"
+        value="MONORANJON"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        Bio
+      </label>
+
+      <textarea
+        id="editBio"
+      >আমার গল্প, আমার স্মৃতি এবং আমার লেখা। 📖</textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        Gender
+      </label>
+
+      <select>
+
+        <option>Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+        <option>Prefer not to say</option>
+
+      </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        Birthday
+      </label>
+
+      <input
+        type="date"
+        class="input"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        Hobby
+      </label>
+
+      <input
+        class="input"
+        placeholder="Writing, Music..."
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label class="label">
+        Student / Job
+      </label>
+
+      <input
+        class="input"
+        placeholder="Student"
+      >
+
+    </div>
+
+
+    <button class="btn" onclick="saveProfile()">
+      💾 Save Profile
+    </button>
 
   </div>
+
+</div>
+
+
+<!-- ================= BOOK READER MODAL ================= -->
+
+<div class="modal" id="readerModal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2 id="readerTitle">
+        📖 বই
+      </h2>
+
+      <button class="close" onclick="closeModal('readerModal')">
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="muted">
+        Chapters
+      </div>
+
+      <div class="chapter-list">
+
+        <button class="chapter-btn" onclick="changePage(1)">
+          Chapter 1
+        </button>
+
+        <button class="chapter-btn" onclick="changePage(2)">
+          Chapter 2
+        </button>
+
+        <button class="chapter-btn" onclick="changePage(3)">
+          Chapter 3
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="book-reader">
+
+      <div class="book-page" id="bookPage">
+
+        <h2>প্রথম অধ্যায়</h2>
+
+        <p id="readerText">
+          এই বইয়ের প্রথম পৃষ্ঠা।
+
+          এখানে গল্পের লেখা থাকবে।
+
+          পরবর্তীতে তুমি চাইলে নতুন অধ্যায়
+          এবং নতুন পৃষ্ঠা যোগ করতে পারবে।
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="page-controls">
+
+      <button class="btn secondary" onclick="previousPage()">
+        ← Previous
+      </button>
+
+      <span
+        id="pageNumber"
+        style="padding:12px">
+        Page 1
+      </span>
+
+      <button class="btn" onclick="nextPage()">
+        Next →
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 
 
@@ -1154,844 +2296,658 @@
 
 
 <script>
-  /* =========================
-     STORAGE
-  ========================= */
 
-  const PROFILE_KEY = "amar_diary_profile_v2";
-  const POSTS_KEY = "amar_diary_posts_v2";
-  const DIARY_KEY = "amar_diary_entries_v2";
+/* ================= DATA ================= */
 
-  let profile = JSON.parse(localStorage.getItem(PROFILE_KEY)) || {
-    name: "MONORANJON",
-    username: "writer",
-    bio: "আমার Amar Diary profile",
-    avatar: ""
-  };
+let posts =
+JSON.parse(localStorage.getItem("amarDiaryPosts") || "[]");
 
-  let posts = JSON.parse(localStorage.getItem(POSTS_KEY)) || [];
-  let diaries = JSON.parse(localStorage.getItem(DIARY_KEY)) || [];
+let stories =
+JSON.parse(localStorage.getItem("amarDiaryStories") || "[]");
 
-  let selectedPrivacy = "private";
+let books =
+JSON.parse(localStorage.getItem("amarDiaryBooks") || "[]");
+
+let currentPage = 1;
 
 
-  /* =========================
-     HELPERS
-  ========================= */
+/* ================= NAVIGATION ================= */
 
-  function saveAll() {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
-    localStorage.setItem(DIARY_KEY, JSON.stringify(diaries));
+function showSection(id){
+
+  document.querySelectorAll(".section")
+    .forEach(s => s.classList.remove("active"));
+
+  const section=document.getElementById(id);
+
+  if(section){
+    section.classList.add("active");
   }
 
-  function toast(message) {
-    const el = document.getElementById("toast");
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
 
-    el.textContent = message;
-    el.classList.add("show");
 
-    setTimeout(() => {
-      el.classList.remove("show");
-    }, 2500);
+function nav(id,button){
+
+  showSection(id);
+
+  document.querySelectorAll(".nav-btn")
+    .forEach(b=>b.classList.remove("active"));
+
+  if(button){
+    button.classList.add("active");
+  }
+}
+
+
+function openMessages(){
+
+  showSection("messages");
+
+  document.querySelectorAll(".nav-btn")
+    .forEach(b=>b.classList.remove("active"));
+
+}
+
+
+/* ================= MODAL ================= */
+
+function openModal(id){
+
+  document.getElementById(id)
+    .classList.add("show");
+}
+
+
+function closeModal(id){
+
+  document.getElementById(id)
+    .classList.remove("show");
+}
+
+
+/* ================= TOAST ================= */
+
+function toast(message){
+
+  const t=document.getElementById("toast");
+
+  t.textContent=message;
+  t.classList.add("show");
+
+  setTimeout(()=>{
+    t.classList.remove("show");
+  },2200);
+}
+
+
+/* ================= POST ================= */
+
+function openPost(){
+
+  openModal("postModal");
+}
+
+
+function createPost(){
+
+  const type=document.getElementById("postType").value;
+  const title=document.getElementById("postTitle").value;
+  const text=document.getElementById("postText").value;
+  const privacy=document.getElementById("postPrivacy").value;
+
+  if(!title && !text){
+
+    toast("আগে কিছু লিখুন ✍️");
+    return;
   }
 
-  function closeModal(id) {
-    document.getElementById(id).classList.remove("show");
+  posts.unshift({
+    type,
+    title,
+    text,
+    privacy,
+    date:new Date().toLocaleString("bn-BD")
+  });
+
+  localStorage.setItem(
+    "amarDiaryPosts",
+    JSON.stringify(posts)
+  );
+
+  renderPosts();
+
+  document.getElementById("postTitle").value="";
+  document.getElementById("postText").value="";
+
+  closeModal("postModal");
+
+  toast("পোস্ট সফলভাবে তৈরি হয়েছে ✅");
+}
+
+
+function renderPosts(){
+
+  const feed=document.getElementById("feed");
+
+  if(posts.length===0){
+
+    document.getElementById("postCount").textContent="0";
+    return;
   }
 
-  function openModal(id) {
-    document.getElementById(id).classList.add("show");
-  }
+  posts.forEach(post=>{
 
-  function escapeHTML(str) {
-    return String(str || "").replace(/[&<>"']/g, function(m) {
-      return {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[m];
-    });
-  }
+    const card=document.createElement("div");
 
-  function getInitial(name) {
-    return (name || "M").charAt(0).toUpperCase();
-  }
+    card.className="card";
 
+    card.innerHTML=`
 
-  /* =========================
-     NAVIGATION
-  ========================= */
+      <div class="post-head">
 
-  function showSection(id, button) {
-
-    document.querySelectorAll(".section").forEach(section => {
-      section.classList.remove("active");
-    });
-
-    const section = document.getElementById(id);
-
-    if (section) {
-      section.classList.add("active");
-    }
-
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-      btn.classList.remove("active");
-    });
-
-    if (button) {
-      button.classList.add("active");
-    }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-    renderAll();
-  }
-
-
-  /* =========================
-     PROFILE
-  ========================= */
-
-  function renderProfile() {
-
-    document.getElementById("profileName").textContent =
-      profile.name;
-
-    document.getElementById("profileUsername").textContent =
-      "@" + profile.username;
-
-    document.getElementById("profileBio").textContent =
-      profile.bio || "আমার Amar Diary profile";
-
-    const avatar = document.getElementById("profileAvatar");
-
-    if (profile.avatar) {
-
-      avatar.innerHTML =
-        `<img src="${profile.avatar}" alt="Profile">`;
-
-    } else {
-
-      avatar.textContent = getInitial(profile.name);
-
-    }
-
-    document.getElementById("postCount").textContent =
-      posts.length;
-
-    document.getElementById("likeCount").textContent =
-      posts.reduce((sum, post) => sum + (post.likes || 0), 0);
-
-    document.getElementById("adminPosts").textContent =
-      posts.length;
-  }
-
-
-  function openProfileEdit() {
-
-    document.getElementById("nameInput").value =
-      profile.name;
-
-    document.getElementById("usernameInput").value =
-      profile.username;
-
-    document.getElementById("bioInput").value =
-      profile.bio;
-
-    document.getElementById("profileImage").value = "";
-
-    openModal("profileModal");
-  }
-
-
-  function saveProfile() {
-
-    const name =
-      document.getElementById("nameInput").value.trim();
-
-    const username =
-      document.getElementById("usernameInput").value.trim()
-      .replace(/^@/, "")
-      .replace(/\s+/g, "_");
-
-    const bio =
-      document.getElementById("bioInput").value.trim();
-
-    if (!name) {
-      toast("Name দিন");
-      return;
-    }
-
-    profile.name = name;
-    profile.username = username || "writer";
-    profile.bio = bio;
-
-    const file =
-      document.getElementById("profileImage").files[0];
-
-    if (file) {
-
-      const reader = new FileReader();
-
-      reader.onload = function(e) {
-
-        profile.avatar = e.target.result;
-
-        saveAll();
-        renderAll();
-
-        closeModal("profileModal");
-
-        toast("Profile updated ✅");
-      };
-
-      reader.readAsDataURL(file);
-
-    } else {
-
-      saveAll();
-      renderAll();
-
-      closeModal("profileModal");
-
-      toast("Profile updated ✅");
-    }
-  }
-
-
-  /* =========================
-     POSTS
-  ========================= */
-
-  function openPost() {
-
-    document.getElementById("postTitle").value = "";
-    document.getElementById("postBody").value = "";
-    document.getElementById("postImage").value = "";
-
-    selectedPrivacy = "private";
-
-    document.getElementById("postPrivacy").value =
-      "private";
-
-    openModal("postModal");
-  }
-
-
-  function setPostPrivacy(value) {
-
-    selectedPrivacy = value;
-
-    document.getElementById("postPrivacy").value =
-      value;
-
-    if (value === "public") {
-      toast("Public selected 🌍");
-    }
-
-    if (value === "private") {
-      toast("Personal selected 🔒");
-    }
-
-    if (value === "custom") {
-      toast("Custom sharing পরে Supabase দিয়ে হবে 👥");
-    }
-  }
-
-
-  function publishPost() {
-
-    const title =
-      document.getElementById("postTitle").value.trim();
-
-    const body =
-      document.getElementById("postBody").value.trim();
-
-    const imageFile =
-      document.getElementById("postImage").files[0];
-
-    if (!title && !body && !imageFile) {
-      toast("কিছু লিখুন বা ছবি দিন");
-      return;
-    }
-
-    const post = {
-      id: Date.now(),
-      title,
-      body,
-      author: profile.name,
-      username: profile.username,
-      avatar: profile.avatar,
-      privacy: selectedPrivacy,
-      likes: 0,
-      liked: false,
-      comments: [],
-      date: new Date().toISOString(),
-      image: ""
-    };
-
-    if (imageFile) {
-
-      const reader = new FileReader();
-
-      reader.onload = function(e) {
-
-        post.image = e.target.result;
-
-        posts.unshift(post);
-
-        saveAll();
-        renderAll();
-
-        closeModal("postModal");
-
-        toast("Post created successfully 🎉");
-      };
-
-      reader.readAsDataURL(imageFile);
-
-    } else {
-
-      posts.unshift(post);
-
-      saveAll();
-      renderAll();
-
-      closeModal("postModal");
-
-      toast("Post created successfully 🎉");
-    }
-  }
-
-
-  function likePost(id) {
-
-    const post = posts.find(p => p.id === id);
-
-    if (!post) return;
-
-    post.liked = !post.liked;
-
-    post.likes += post.liked ? 1 : -1;
-
-    if (post.likes < 0) {
-      post.likes = 0;
-    }
-
-    saveAll();
-    renderAll();
-  }
-
-
-  function commentPost(id) {
-
-    const post = posts.find(p => p.id === id);
-
-    if (!post) return;
-
-    const text = prompt("Comment লিখুন:");
-
-    if (!text || !text.trim()) return;
-
-    post.comments.push({
-      id: Date.now(),
-      author: profile.name,
-      text: text.trim(),
-      date: new Date().toISOString()
-    });
-
-    saveAll();
-    renderAll();
-
-    toast("Comment added 💬");
-  }
-
-
-  function sharePost(id) {
-
-    const post = posts.find(p => p.id === id);
-
-    if (!post) return;
-
-    const text =
-      `${post.title || "Amar Diary Post"}\n\n${post.body || ""}`;
-
-    if (navigator.share) {
-
-      navigator.share({
-        title: post.title || "Amar Diary",
-        text: text
-      }).catch(() => {});
-
-    } else {
-
-      navigator.clipboard
-        ?.writeText(text)
-        .then(() => toast("Post text copied 🔗"))
-        .catch(() => toast("Share unavailable"));
-    }
-  }
-
-
-  function deletePost(id) {
-
-    if (!confirm("এই পোস্টটি delete করতে চান?")) {
-      return;
-    }
-
-    posts = posts.filter(post => post.id !== id);
-
-    saveAll();
-    renderAll();
-
-    toast("Post deleted");
-  }
-
-
-  /* =========================
-     FEED
-  ========================= */
-
-  function renderFeed() {
-
-    const feed =
-      document.getElementById("feed");
-
-    if (!posts.length) {
-
-      feed.innerHTML = `
-        <div class="card empty">
-          এখনো কোনো পোস্ট নেই।<br><br>
-          <button class="btn" onclick="openPost()">
-            ✍️ প্রথম পোস্ট লিখুন
-          </button>
+        <div class="small-avatar">
+          M
         </div>
-      `;
 
-      return;
-    }
+        <div class="post-info">
 
-    feed.innerHTML = posts.map(post => {
-
-      let privacyIcon = "🌍";
-
-      if (post.privacy === "private") {
-        privacyIcon = "🔒";
-      }
-
-      if (post.privacy === "custom") {
-        privacyIcon = "👥";
-      }
-
-      const avatarHTML = post.avatar
-        ? `<img src="${post.avatar}" alt="">`
-        : getInitial(post.author);
-
-      const commentsHTML =
-        (post.comments || []).slice(-3).map(comment => `
-          <div style="
-            background:rgba(255,255,255,.04);
-            padding:10px;
-            border-radius:10px;
-            margin-top:7px;
-          ">
-            <strong>${escapeHTML(comment.author)}</strong>
-            <div style="color:#cbd5e1;margin-top:3px">
-              ${escapeHTML(comment.text)}
-            </div>
-          </div>
-        `).join("");
-
-      return `
-        <article class="card">
-
-          <div class="post-header">
-
-            <div class="post-avatar">
-              ${avatarHTML}
-            </div>
-
-            <div>
-              <div class="post-author">
-                ${escapeHTML(post.author)}
-              </div>
-
-              <div class="post-time">
-                @${escapeHTML(post.username)}
-                · ${new Date(post.date).toLocaleDateString("bn-BD")}
-              </div>
-            </div>
-
-            <div class="privacy">
-              ${privacyIcon}
-            </div>
-
+          <div class="post-name">
+            MONORANJON
           </div>
 
-          ${
-            post.title
-              ? `<div class="post-title">
-                  ${escapeHTML(post.title)}
-                </div>`
-              : ""
-          }
-
-          ${
-            post.body
-              ? `<div class="post-body">
-                  ${escapeHTML(post.body)}
-                </div>`
-              : ""
-          }
-
-          ${
-            post.image
-              ? `<img class="post-image"
-                     src="${post.image}"
-                     alt="Post image">`
-              : ""
-          }
-
-          <div class="post-actions">
-
-            <button
-              class="post-action ${post.liked ? "active" : ""}"
-              onclick="likePost(${post.id})">
-              ${post.liked ? "❤️" : "♡"} ${post.likes}
-            </button>
-
-            <button
-              class="post-action"
-              onclick="commentPost(${post.id})">
-              💬 ${post.comments.length}
-            </button>
-
-            <button
-              class="post-action"
-              onclick="sharePost(${post.id})">
-              ↗️ Share
-            </button>
-
-            <button
-              class="post-action"
-              onclick="deletePost(${post.id})">
-              🗑️
-            </button>
-
+          <div class="post-time">
+            ${post.date} • ${post.privacy}
           </div>
 
-          ${
-            commentsHTML
-              ? `<div style="margin-top:12px">
-                   ${commentsHTML}
-                 </div>`
-              : ""
-          }
-
-        </article>
-      `;
-
-    }).join("");
-  }
-
-
-  /* =========================
-     DIARY
-  ========================= */
-
-  function openDiary() {
-
-    document.getElementById("diaryTitle").value = "";
-    document.getElementById("diaryBody").value = "";
-    document.getElementById("diaryPrivacy").value = "private";
-
-    openModal("diaryModal");
-  }
-
-
-  function saveDiary() {
-
-    const title =
-      document.getElementById("diaryTitle").value.trim();
-
-    const body =
-      document.getElementById("diaryBody").value.trim();
-
-    const privacy =
-      document.getElementById("diaryPrivacy").value;
-
-    if (!title && !body) {
-      toast("ডায়রিতে কিছু লিখুন");
-      return;
-    }
-
-    const diary = {
-      id: Date.now(),
-      title,
-      body,
-      privacy,
-      date: new Date().toISOString()
-    };
-
-    diaries.unshift(diary);
-
-    saveAll();
-    renderDiary();
-
-    closeModal("diaryModal");
-
-    toast("Diary saved 📖");
-  }
-
-
-  function renderDiary() {
-
-    const page =
-      document.getElementById("diaryPage");
-
-    if (!diaries.length) {
-
-      page.innerHTML = `
-        <div class="diary-lock">
-          🔒<br><br>
-          আপনার Personal Diary এখানে থাকবে।
-          <br><br>
-          <small>Only you can see it.</small>
         </div>
-      `;
 
-      return;
-    }
-
-    const diary = diaries[0];
-
-    page.innerHTML = `
-      <div class="diary-title">
-        ${escapeHTML(diary.title || "আমার ডায়রি")}
       </div>
 
-      <div style="font-size:13px;color:#64748b;margin-bottom:18px">
-        ${new Date(diary.date).toLocaleDateString("bn-BD")}
-        · ${diary.privacy === "private" ? "🔒 Personal" : "👥 Custom"}
+      <div class="post-title">
+        ${escapeHTML(post.title)}
       </div>
 
-      <div class="diary-content">
-        ${escapeHTML(diary.body)}
+      <div class="post-text">
+        ${escapeHTML(post.text)}
       </div>
 
-      <div style="margin-top:25px">
-        <button class="btn secondary" onclick="openDiary()">
-          ✍️ নতুন পৃষ্ঠা
+      <div class="post-actions">
+
+        <button
+          class="post-action"
+          onclick="react(this)">
+          ❤️ Like
         </button>
+
+        <button
+          class="post-action"
+          onclick="commentPost()">
+          💬 Comment
+        </button>
+
+        <button
+          class="post-action"
+          onclick="sharePost()">
+          🔗 Share
+        </button>
+
+        <button
+          class="post-action"
+          onclick="translatePost()">
+          🌐 Translate
+        </button>
+
       </div>
     `;
-  }
 
-
-  /* =========================
-     SEARCH
-  ========================= */
-
-  function openSearch() {
-
-    showSection("search");
-
-    setTimeout(() => {
-      document.getElementById("searchInput")?.focus();
-    }, 100);
-  }
-
-
-  function searchUser() {
-
-    const query =
-      document.getElementById("searchInput").value
-        .trim()
-        .replace(/^@/, "")
-        .toLowerCase();
-
-    const results =
-      document.getElementById("searchResults");
-
-    if (!query) {
-
-      results.innerHTML = `
-        <div class="card empty">
-          Username লিখে search করুন।
-        </div>
-      `;
-
-      return;
-    }
-
-    if (
-      profile.username.toLowerCase().includes(query)
-    ) {
-
-      results.innerHTML = `
-        <div class="card">
-
-          <div class="post-header">
-
-            <div class="post-avatar">
-              ${
-                profile.avatar
-                  ? `<img src="${profile.avatar}" alt="">`
-                  : getInitial(profile.name)
-              }
-            </div>
-
-            <div>
-              <strong>${escapeHTML(profile.name)}</strong>
-
-              <div style="color:var(--muted)">
-                @${escapeHTML(profile.username)}
-              </div>
-            </div>
-
-          </div>
-
-          <button
-            class="btn secondary"
-            style="margin-top:15px"
-            onclick="showSection('profile')">
-            View Profile
-          </button>
-
-        </div>
-      `;
-
-    } else {
-
-      results.innerHTML = `
-        <div class="card empty">
-          এই Demo version-এ শুধু বর্তমান profile search করা যায়।
-          <br><br>
-          Real user search Supabase দিয়ে যোগ হবে।
-        </div>
-      `;
-    }
-  }
-
-
-  function searchUserModal() {
-
-    const query =
-      document.getElementById("userSearchInput").value
-        .trim()
-        .replace(/^@/, "")
-        .toLowerCase();
-
-    const results =
-      document.getElementById("modalSearchResults");
-
-    if (!query) {
-      results.innerHTML = "";
-      return;
-    }
-
-    if (profile.username.toLowerCase().includes(query)) {
-
-      results.innerHTML = `
-        <div class="card">
-
-          <div class="post-header">
-
-            <div class="post-avatar">
-              ${
-                profile.avatar
-                  ? `<img src="${profile.avatar}" alt="">`
-                  : getInitial(profile.name)
-              }
-            </div>
-
-            <div>
-              <strong>${escapeHTML(profile.name)}</strong>
-
-              <div style="color:var(--muted)">
-                @${escapeHTML(profile.username)}
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-    } else {
-
-      results.innerHTML = `
-        <div class="empty">
-          User পাওয়া যায়নি।
-        </div>
-      `;
-    }
-  }
-
-
-  /* =========================
-     RENDER
-  ========================= */
-
-  function renderAll() {
-
-    renderProfile();
-    renderFeed();
-    renderDiary();
-
-    document.getElementById("adminUsers").textContent =
-      "1";
-
-    document.getElementById("adminPosts").textContent =
-      posts.length;
-  }
-
-
-  /* =========================
-     MODAL OUTSIDE CLICK
-  ========================= */
-
-  document.querySelectorAll(".modal").forEach(modal => {
-
-    modal.addEventListener("click", function(e) {
-
-      if (e.target === modal) {
-        modal.classList.remove("show");
-      }
-
-    });
+    feed.prepend(card);
 
   });
 
+  document.getElementById("postCount")
+    .textContent=posts.length;
+}
 
-  /* =========================
-     SERVICE WORKER
-  ========================= */
 
-  if ("serviceWorker" in navigator) {
+/* ================= REACTION ================= */
 
-    window.addEventListener("load", () => {
+function react(button){
 
-      navigator.serviceWorker
-        .register("sw.js")
-        .catch(() => {});
+  button.classList.toggle("active");
 
-    });
+  if(button.classList.contains("active")){
+    button.textContent="❤️ Liked";
+    toast("Like দেওয়া হয়েছে ❤️");
+  }else{
+    button.textContent="❤️ Like";
+  }
+}
 
+
+function commentPost(){
+
+  const comment=prompt("আপনার Comment লিখুন:");
+
+  if(comment){
+    toast("Comment যোগ হয়েছে 💬");
+  }
+}
+
+
+function sharePost(){
+
+  toast("Share অপশন পরে backend-এর সাথে যুক্ত হবে 🔗");
+}
+
+
+function translatePost(){
+
+  toast("Translate language নির্বাচন করা যাবে 🌐");
+}
+
+
+/* ================= STORY ================= */
+
+function openStory(){
+
+  openModal("storyModal");
+}
+
+
+function createStory(){
+
+  const text=document.getElementById("storyText").value;
+
+  if(!text){
+
+    toast("Story লিখুন");
+    return;
   }
 
+  stories.unshift({
+    text,
+    date:new Date().toLocaleString("bn-BD")
+  });
 
-  /* =========================
-     INITIALIZE
-  ========================= */
+  localStorage.setItem(
+    "amarDiaryStories",
+    JSON.stringify(stories)
+  );
 
-  renderAll();
+  document.getElementById("storyText").value="";
+
+  closeModal("storyModal");
+
+  toast("Story যোগ হয়েছে ⭕");
+}
+
+
+/* ================= BOOK ================= */
+
+function openBook(){
+
+  openModal("bookModal");
+}
+
+
+function createBook(){
+
+  const title=document.getElementById("bookTitle").value;
+  const type=document.getElementById("bookType").value;
+  const chapter=document.getElementById("chapterTitle").value;
+  const text=document.getElementById("chapterText").value;
+
+  if(!title){
+
+    toast("বইয়ের নাম দিন 📚");
+    return;
+  }
+
+  books.unshift({
+    title,
+    type,
+    chapters:[
+      {
+        title:chapter || "প্রথম অধ্যায়",
+        text:text || "এখানে প্রথম পৃষ্ঠার লেখা থাকবে।"
+      }
+    ]
+  });
+
+  localStorage.setItem(
+    "amarDiaryBooks",
+    JSON.stringify(books)
+  );
+
+  renderBooks();
+
+  closeModal("bookModal");
+
+  toast("নতুন বই তৈরি হয়েছে 📚");
+}
+
+
+function renderBooks(){
+
+  const grid=document.getElementById("bookGrid");
+
+  books.forEach(book=>{
+
+    const div=document.createElement("div");
+
+    div.className="book-card";
+
+    div.onclick=()=>{
+      openReader(book.title,"MONORANJON");
+    };
+
+    div.innerHTML=`
+
+      <div class="book-cover">
+        📖
+        <br>
+        ${escapeHTML(book.title)}
+      </div>
+
+      <div class="book-info">
+
+        <div class="book-title">
+          ${escapeHTML(book.title)}
+        </div>
+
+        <div class="book-author">
+          ✍️ MONORANJON
+        </div>
+
+      </div>
+    `;
+
+    grid.prepend(div);
+
+  });
+
+}
+
+
+/* ================= BOOK READER ================= */
+
+function openReader(title,author){
+
+  currentPage=1;
+
+  document.getElementById("readerTitle")
+    .textContent="📖 "+title;
+
+  document.getElementById("pageNumber")
+    .textContent="Page 1";
+
+  openModal("readerModal");
+}
+
+
+function nextPage(){
+
+  currentPage++;
+
+  changeReaderAnimation();
+
+  document.getElementById("pageNumber")
+    .textContent="Page "+currentPage;
+}
+
+
+function previousPage(){
+
+  if(currentPage>1){
+    currentPage--;
+  }
+
+  changeReaderAnimation();
+
+  document.getElementById("pageNumber")
+    .textContent="Page "+currentPage;
+}
+
+
+function changePage(page){
+
+  currentPage=page;
+
+  changeReaderAnimation();
+
+  document.getElementById("pageNumber")
+    .textContent="Page "+page;
+}
+
+
+function changeReaderAnimation(){
+
+  const page=document.getElementById("bookPage");
+
+  page.style.animation="none";
+
+  void page.offsetWidth;
+
+  page.style.animation="pageTurn .7s ease";
+}
+
+
+/* ================= DIARY ================= */
+
+function openDiary(){
+
+  openModal("diaryModal");
+}
+
+
+function saveDiary(){
+
+  const title=document.getElementById("diaryTitle").value;
+  const text=document.getElementById("diaryText").value;
+  const privacy=document.getElementById("diaryPrivacy").value;
+
+  if(!text){
+
+    toast("ডায়েরিতে কিছু লিখুন 📔");
+    return;
+  }
+
+  localStorage.setItem(
+    "latestDiary",
+    JSON.stringify({
+      title,
+      text,
+      privacy
+    })
+  );
+
+  closeModal("diaryModal");
+
+  toast("Diary সংরক্ষণ হয়েছে 📔");
+}
+
+
+/* ================= PROFILE ================= */
+
+function openProfileEdit(){
+
+  openModal("profileModal");
+}
+
+
+function saveProfile(){
+
+  const name=document.getElementById("editName").value;
+  const bio=document.getElementById("editBio").value;
+
+  if(name){
+
+    document.getElementById("profileName")
+      .textContent=name;
+
+    localStorage.setItem(
+      "profileName",
+      name
+    );
+  }
+
+  document.getElementById("profileBio")
+    .textContent=bio;
+
+  localStorage.setItem(
+    "profileBio",
+    bio
+  );
+
+  closeModal("profileModal");
+
+  toast("Profile আপডেট হয়েছে ✅");
+}
+
+
+/* ================= FRIENDS ================= */
+
+function acceptFriend(button){
+
+  button.textContent="Accepted ✓";
+  button.classList.remove("success");
+  button.classList.add("secondary");
+
+  button.disabled=true;
+
+  toast("Friend Request accepted 👥");
+}
+
+
+/* ================= CHAT ================= */
+
+let currentChat="Sakib";
+
+
+function selectChat(name){
+
+  currentChat=name;
+
+  document.getElementById("chatTitle")
+    .textContent="💬 "+name;
+
+  document.querySelectorAll(".chat-user")
+    .forEach(x=>x.classList.remove("active"));
+
+  event.currentTarget.classList.add("active");
+}
+
+
+function sendMessage(){
+
+  const input=document.getElementById("messageInput");
+
+  const text=input.value.trim();
+
+  if(!text){
+    return;
+  }
+
+  const message=document.createElement("div");
+
+  message.className="message me";
+
+  message.textContent=text;
+
+  document.getElementById("chatMessages")
+    .appendChild(message);
+
+  input.value="";
+
+  const box=document.getElementById("chatMessages");
+
+  box.scrollTop=box.scrollHeight;
+}
+
+
+function addEmoji(){
+
+  const input=document.getElementById("messageInput");
+
+  input.value+=" 😊";
+  input.focus();
+}
+
+
+/* ================= SETTINGS ================= */
+
+function setPrivacy(type){
+
+  document.getElementById("defaultPrivacy")
+    .value=type;
+
+  toast("Privacy: "+type);
+}
+
+
+function changeLanguage(language){
+
+  if(language==="bn"){
+    toast("বাংলা ভাষা নির্বাচন করা হয়েছে 🇧🇩");
+  }
+
+  if(language==="en"){
+    toast("English selected 🇺🇸");
+  }
+
+  if(language==="hi"){
+    toast("हिन्दी चुनी गई 🇮🇳");
+  }
+
+  if(language==="ar"){
+    toast("العربية تم اختيارها");
+  }
+}
+
+
+/* ================= HELPERS ================= */
+
+function escapeHTML(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* ================= LOAD PROFILE ================= */
+
+const savedName=
+localStorage.getItem("profileName");
+
+const savedBio=
+localStorage.getItem("profileBio");
+
+if(savedName){
+
+  document.getElementById("profileName")
+    .textContent=savedName;
+}
+
+if(savedBio){
+
+  document.getElementById("profileBio")
+    .textContent=savedBio;
+}
+
+
+/* ================= INITIAL RENDER ================= */
+
+renderPosts();
+renderBooks();
 
 </script>
 
